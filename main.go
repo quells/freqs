@@ -12,14 +12,29 @@ import (
 	"strings"
 )
 
-const (
+var (
 	barWidth = 40
 	minFreq  = 1000.0
 	maxFreq  = 5000.0
 )
 
 func main() {
-	freqs, err := getFreqs()
+	var err error
+	if len(os.Args) == 3 {
+		minFreq, err = strconv.ParseFloat(os.Args[1], 64)
+		if err != nil {
+			log.Println(err)
+			os.Exit(1)
+		}
+		maxFreq, err = strconv.ParseFloat(os.Args[2], 64)
+		if err != nil {
+			log.Println(err)
+			os.Exit(1)
+		}
+	}
+
+	var freqs []float64
+	freqs, err = getFreqs()
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
@@ -30,7 +45,7 @@ func main() {
 	M = math.Max(M, maxFreq)
 
 	for _, f := range freqs {
-		w := int(math.Round((f - m) / (M - m) * barWidth))
+		w := int(math.Round((f - m) / (M - m) * float64(barWidth)))
 		bar := strings.Repeat(".", w) + strings.Repeat(" ", barWidth-w)
 		fmt.Println(bar + "| " + strconv.FormatFloat(f, 'f', 0, 64))
 	}
